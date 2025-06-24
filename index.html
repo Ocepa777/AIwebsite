@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Leb Lango Multi-Lingual Translator</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* Variables for a cleaner look */
+        :root {
+            --primary-purple: #6d28d9; /* Darker purple for buttons, focus */
+            --light-purple: #8b5cf6; /* Medium purple for 'About' */
+            --dark-heading: #3b0764; /* Very dark purple for header */
+            --text-color: #4b5563; /* General text gray */
+            --light-gray-bg: #f9fafb; /* Lightest gray for input backgrounds */
+            --border-gray: #d1d5db; /* Border color */
+            --background-gradient-start: #e0e6f0;
+            --background-gradient-end: #f0f4f7;
+            --container-shadow: 0 20px 40px rgba(0, 0, 0, 0.15); /* Stronger, softer shadow */
+            --border-radius-lg: 1.5rem;
+            --border-radius-md: 0.75rem;
+        }
+
+        /* General Styles */
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, var(--background-gradient-start) 0%, var(--background-gradient-end) 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+            box-sizing: border-box;
+            color: var(--text-color);
+        }
+
+        /* Main Container */
+        .container {
+            background-color: #ffffff;
+            border-radius: var(--border-radius-lg);
+            box-shadow: var(--container-shadow);
+            padding: 50px; /* Increased padding */
+            width: 100%;
+            max-width: 700px; /* Slightly wider for more spacious feel */
+            text-align: center;
+            position: relative; /* For loading overlay */
+            transition: opacity 0.5s ease-in-out; /* Smooth transition for page toggling */
+        }
+
+        /* Header */
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 40px; /* More space below header */
+        }
+
+        .header svg {
+            width: 45px; /* Slightly larger icon */
+            height: 45px;
+            margin-right: 20px;
+            color: var(--primary-purple); /* Primary purple for icon */
+        }
+
+        .header h1 {
+            font-size: 2.5rem; /* Larger heading */
+            font-weight: 700;
+            color: var(--dark-heading);
+            margin: 0;
+            line-height: 1.2;
+            letter-spacing: -0.02em; /* Slightly tighter letter spacing */
+        }
+
+        /* Textarea Labels */
+        .label {
+            display: block;
+            text-align: left;
+            font-size: 1.15rem; /* Slightly larger label font */
+            font-weight: 600; /* Bolder label */
+            color: var(--dark-heading); /* Darker color for labels */
+            margin-bottom: 12px;
+            margin-top: 30px; /* Spacing above textareas */
+        }
+
+        /* Textareas & Select */
+        textarea, select {
+            width: calc(100% - 2px);
+            padding: 18px; /* More padding for a softer look */
+            border: 1px solid var(--border-gray);
+            border-radius: var(--border-radius-md);
+            font-size: 1.05rem; /* Slightly larger text */
+            color: #1f2937;
+            resize: vertical;
+            min-height: 120px; /* Minimum height for input */
+            box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.08); /* More noticeable inner shadow */
+            outline: none;
+            margin-bottom: 20px; /* Spacing below elements */
+            transition: border-color 0.3s ease, box-shadow 0.3s ease; /* Smooth transitions */
+        }
+
+        textarea:focus, select:focus {
+            border-color: var(--primary-purple);
+            box-shadow: 0 0 0 4px rgba(109, 40, 217, 0.25); /* Wider, softer focus ring */
+        }
+
+        textarea::placeholder {
+            color: #9ca3af;
+            font-weight: 300; /* Lighter placeholder font */
+        }
+
+        /* Select specific styling */
+        select {
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='%236d28d9'%3E%3Cpath fill-rule='evenodd' d='M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 000-1.414z' clip-rule='evenodd'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 1.25rem center; /* Adjusted position */
+            background-size: 1.5em;
+            padding-right: 3rem; /* More space for the icon */
+            cursor: pointer;
+            height: 60px; /* Consistent height with textarea padding */
+        }
+
+        /* Translate Button */
+        .translate-button {
+            background-image: linear-gradient(to right, #7e22ce, #6d28d9); /* Gradient background */
+            color: #ffffff;
+            font-weight: 700; /* Bolder text */
+            padding: 18px 35px; /* More padding */
+            border: none;
+            border-radius: var(--border-radius-md);
+            cursor: pointer;
+            margin-top: 25px;
+            margin-bottom: 35px;
+            width: 100%;
+            font-size: 1.35rem; /* Larger font size */
+            box-shadow: 0 8px 15px rgba(109, 40, 217, 0.3); /* Stronger, colored shadow */
+            transition: all 0.3s ease; /* Smooth transition for all properties */
+            letter-spacing: 0.05em; /* A bit of letter spacing */
+            text-transform: uppercase; /* Uppercase text */
+        }
+
+        .translate-button:hover {
+            background-image: linear-gradient(to right, #6d28d9, #7e22ce); /* Reverse gradient on hover */
+            transform: translateY(-3px); /* More pronounced lift */
+            box-shadow: 0 12px 20px rgba(109, 40, 217, 0.4);
+        }
+
+        .translate-button:active {
+            transform: translateY(0);
+            box-shadow: 0 5px 10px rgba(109, 40, 217, 0.2);
+        }
+
+        .translate-button:disabled {
+            background-image: none;
+            background-color: #c4b5fd; /* Lighter purple when disabled */
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+            opacity: 0.8;
+        }
+
+        /* Output Textareas (Read-only) */
+        #outputTranslatedText, #outputBackTranslatedText {
+            background-color: var(--light-gray-bg);
+            cursor: default;
+            box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.05); /* Lighter inner shadow for output */
+        }
+        #outputBackTranslatedText {
+            margin-bottom: 0;
+        }
+
+        /* Disclaimer Text */
+        .disclaimer-text {
+            font-size: 0.85rem; /* Smaller font for subtlety */
+            color: #88929e; /* Muted gray */
+            margin-top: 25px;
+            margin-bottom: 25px;
+        }
+
+        /* About Project Button & Back Button */
+        .action-button { /* Reusing styles for similar buttons */
+            background-color: var(--light-purple);
+            color: #ffffff;
+            font-weight: 600;
+            padding: 14px 30px; /* More padding */
+            border: none;
+            border-radius: var(--border-radius-md);
+            cursor: pointer;
+            font-size: 1.05rem;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            margin-top: 25px;
+            display: inline-block; /* For proper centering */
+        }
+
+        .action-button:hover {
+            background-color: #7c3aed; /* Darker on hover */
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .action-button:active {
+            transform: translateY(0);
+            box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        /* About Page Specific Styles */
+        .about-page {
+            text-align: left; /* Align text to left within about page */
+            opacity: 0; /* Hidden by default */
+            visibility: hidden;
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow-y: auto; /* Enable scrolling for long content */
+            padding: 50px; /* Match container padding */
+            box-sizing: border-box; /* Include padding in width/height */
+            transition: opacity 0.5s ease-in-out, visibility 0.5s ease-in-out;
+            background-color: #ffffff; /* Explicitly set background */
+            border-radius: var(--border-radius-lg); /* Match container border radius */
+        }
+
+        .about-page.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .about-page h2 {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--dark-heading);
+            margin-bottom: 20px;
+            border-bottom: 2px solid var(--primary-purple); /* Underline for sections */
+            padding-bottom: 10px;
+        }
+        .about-page h3 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--primary-purple);
+            margin-top: 30px;
+            margin-bottom: 15px;
+        }
+        .about-page p {
+            line-height: 1.7;
+            margin-bottom: 15px;
+            color: var(--text-color);
+        }
+        .about-page ul {
+            list-style: none; /* Remove default bullet points */
+            padding-left: 0;
+            margin-bottom: 20px;
+        }
+        .about-page ul li {
+            position: relative;
+            padding-left: 25px;
+            margin-bottom: 10px;
+            line-height: 1.6;
+            color: var(--text-color);
+        }
+        .about-page ul li::before {
+            content: '•'; /* Custom bullet point */
+            color: var(--primary-purple);
+            font-size: 1.2em;
+            position: absolute;
+            left: 0;
+            top: 0;
+        }
+
+        .about-page a {
+            color: var(--primary-purple);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+        .about-page a:hover {
+            text-decoration: underline;
+            color: var(--dark-heading);
+        }
+
+        .about-page .back-button {
+            margin-top: 40px;
+            margin-bottom: 20px;
+        }
+        .about-page .footer-text {
+            font-size: 0.8em;
+            color: #88929e;
+            margin-top: 30px;
+            padding-top: 15px;
+            border-top: 1px dashed var(--border-gray);
+        }
+
+        /* Andrew Ocepa Image Styling */
+        .andrew-image {
+            max-width: 100%; /* Ensure image doesn't overflow container */
+            height: auto; /* Maintain aspect ratio */
+            border-radius: var(--border-radius-md); /* Apply rounded corners, but not fully circular */
+            object-fit: contain; /* Ensure the whole image is visible within its bounds */
+            border: 4px solid var(--primary-purple); /* Border around the image */
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1); /* Soft shadow */
+            margin: 20px auto 30px auto; /* Centered with spacing */
+            display: block; /* Ensure it's a block element for margin auto to work */
+        }
+
+        /* Responsive Adjustments */
+        @media (max-width: 768px) {
+            .container {
+                padding: 30px 25px;
+                max-width: 100%; /* Allow container to take full width on smaller screens */
+                margin: 10px; /* Some margin from edges */
+            }
+            .header h1 {
+                font-size: 2rem;
+            }
+            .header svg {
+                width: 35px;
+                height: 35px;
+                margin-right: 15px;
+            }
+            .label {
+                font-size: 1rem;
+            }
+            textarea, select {
+                padding: 15px;
+                font-size: 0.95rem;
+            }
+            .translate-button {
+                padding: 15px 25px;
+                font-size: 1.1rem;
+            }
+            .action-button {
+                padding: 12px 20px;
+                font-size: 0.95rem;
+            }
+            .about-page {
+                padding: 30px 25px; /* Adjust padding for about page on small screens */
+            }
+            .about-page h2 {
+                font-size: 1.7rem;
+            }
+            .about-page h3 {
+                font-size: 1.3rem;
+            }
+            .andrew-image {
+                width: 90%; /* Adjust width for smaller screens */
+                height: auto;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container" id="mainContainer">
+        <!-- Translator App Content -->
+        <div id="translatorApp">
+            <div class="header">
+                <!-- Brain/AI Icon - Using inline SVG 
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M12 2C6.477 2 2 6.477 2 12s4.477 10 10 10 10-4.477 10-10S17.523 2 12 2zm0 18c-4.411 0-8-3.589-8-8s3.589-8 8-8 8 3.589 8 8-3.589 8-8 8z"/>
+                    <path d="M10 9a1 1 0 1 0 0-2 1 1 0 0 0 0 2zm4 0a1 1 0 1 0 0-2 1 1 0 0 0 0 2zm-2 5a2 2 0 1 1-4 0h4a2 2 0 1 1-4 0z"/>
+                </svg>-->
+                <h1>Leb Lango Multi-Lingual Translator(Lira Town College)</h1>
+            </div>
+
+            <label for="inputLebLangoText" class="label">Enter Leb Lango Text:</label>
+            <textarea id="inputLebLangoText" placeholder="Cwo ilebLango..."></textarea>
+
+            <label for="targetLanguage" class="label">Translate To:</label>
+            <select id="targetLanguage">
+                <option value="english">English</option>
+                <option value="luganda">Luganda</option>
+                <option value="swahili">Swahili</option>
+                <option value="french">French</option>
+                <option value="spanish">Spanish</option>
+                <option value="german">German</option>
+                <option value="chinese">Chinese (Simplified)</option>
+                <option value="hindi">Hindi</option>
+                <option value="arabic">Arabic</option>
+            </select>
+
+            <button id="translateButton" class="translate-button">Translate</button>
+
+            <label for="outputTranslatedText" class="label">Translated Text (<span id="currentTargetLang">English</span>):</label>
+            <textarea id="outputTranslatedText" readonly placeholder="Your translation will appear here..."></textarea>
+
+            <label for="outputBackTranslatedText" class="label">Back-Translation (to English):</label>
+            <textarea id="outputBackTranslatedText" readonly placeholder="Back-translated text (to English) will appear here..."></textarea>
+
+            <p class="disclaimer-text">This is a simulated AI translation for demonstration purposes.</p>
+
+            <button id="aboutProjectButton" class="action-button">About Project</button>
+        </div>
+
+        <!-- About Page Content -->
+        <div id="aboutPage" class="about-page">
+            <h2 class="header">About Us</h2>
+            <p>
+                Lango Multilingual Translator AI is a smart, language-aware system built to translate text from Leb Lango into any language specified by the user. It’s designed to help bridge cultural and linguistic gaps by delivering translations that are not only grammatically correct but also contextually accurate and idiomatically natural in the target language.
+            </p>
+            <p>
+                Whether you're translating a single word, a full sentence, or an entire paragraph, the AI intelligently interprets the structure and tone of the original Lango input and generates fluent translations that make sense in real-world usage.
+            </p>
+
+            <h3>What We Do</h3>
+            <ul>
+                <li>
+                    <strong>🔁 Lango → Any Language Translation</strong><br>
+                    You provide a Lango word, sentence, or passage — the AI translates it into your chosen language (e.g., English, Swahili, French, Arabic, etc.).
+                </li>
+                <li>
+                    <strong>🔄 Back-Translation for Clarity</strong><br>
+                    For transparency and verification, we also provide a back-translation — converting the translated text back into English — so users can compare meaning and ensure accuracy.
+                </li>
+                <li>
+                    <strong>🎯 Context-Aware Results</strong><br>
+                    The AI is trained to understand the nuances of meaning, grammar, and cultural expressions in both Lango and the target language, ensuring reliable results in real-life scenarios.
+                </li>
+            </ul>
+
+            <h3>Our Mission</h3>
+            <ul>
+                <li>Preserve and promote the Leb Lango language in the digital world</li>
+                <li>Empower native speakers and learners with reliable translation tools</li>
+                <li>Enable communication across borders using AI and local knowledge</li>
+                <li>Create a resource for education, research, and cultural exchange</li>
+            </ul>
+
+            <h3>Who’s Behind This?</h3>
+            <!-- Andrew Ocepa Image -->
+            <img src="IMG-20240825-WA0009.jpg"
+                 onerror="this.onerror=null;this.src='https://placehold.co/300x200/6d28d9/ffffff?text=Image+Error'"
+                 alt="Andrew Ocepa" class="andrew-image">
+            <p>
+                This translator was developed by Andrew Ocepa, a student of Lira Town College and a rising innovator in Uganda’s tech community. Andrew is a:
+            </p>
+            <ul>
+                <li>Junior Web Developer</li>
+                <li>UI/UX Designer</li>
+                <li>Python Programmer</li>
+                <li>Prompt Engineering Enthusiast</li>
+            </ul>
+            <p>
+                He built this tool as part of his vision to use AI and code to preserve indigenous languages and empower communities through technology.
+            </p>
+
+            <h3>Help Us Improve</h3>
+            <p>
+                You can support this project by contributing more Lango-to-English examples through our Telegram bot:
+            </p>
+            <p>
+                👉 <a href="https://www.qr-code-generator.com/" target="_blank">https://www.andrewocepa.com/</a>
+            </p>
+            <p>
+                📧 Contact: <a href="mailto:info@langotranslator.org">info@langotranslator.org</a>
+            </p>
+
+            <p class="footer-text">© 2025 Lango Multilingual Translator AI – Built by Andrew Ocepa</p>
+
+            <button id="backToTranslatorButton" class="action-button back-button">Back to Translator</button>
+        </div>
+    </div>
+
+    <script type="text/javascript">
+        // Get references to DOM elements
+        const inputLebLangoText = document.getElementById('inputLebLangoText');
+        const targetLanguageSelect = document.getElementById('targetLanguage');
+        const translateButton = document.getElementById('translateButton');
+        const outputTranslatedText = document.getElementById('outputTranslatedText');
+        const outputBackTranslatedText = document.getElementById('outputBackTranslatedText');
+        const currentTargetLangSpan = document.getElementById('currentTargetLang');
+
+        const translatorApp = document.getElementById('translatorApp');
+        const aboutPage = document.getElementById('aboutPage');
+        const aboutProjectButton = document.getElementById('aboutProjectButton');
+        const backToTranslatorButton = document.getElementById('backToTranslatorButton');
+        const mainContainer = document.getElementById('mainContainer'); // Reference to the main container for height adjustment
+
+        // Function to call the Gemini API for translation
+        async function callGeminiAPI(prompt) {
+            let chatHistory = [];
+            chatHistory.push({ role: "user", parts: [{ text: prompt }] });
+
+            const payload = { contents: chatHistory };
+            const apiKey = "AIzaSyASjM9tPB8mfEFOxvFQEQEMuGO4_WhN7iw"; // API key will be provided by the environment
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+
+            try {
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                const result = await response.json();
+
+                if (result.candidates && result.candidates.length > 0 &&
+                    result.candidates[0].content && result.candidates[0].content.parts &&
+                    result.candidates[0].content.parts.length > 0) {
+                    return result.candidates[0].content.parts[0].text;
+                } else {
+                    console.error('Unexpected API response structure:', result);
+                    return 'Error: Could not get a valid response from the AI for this part.';
+                }
+            } catch (error) {
+                console.error('Error during API call:', error);
+                return 'Error: An error occurred during communication with the translation AI. Please check your network connection or try again later.';
+            }
+        }
+
+        // Update the target language label when the dropdown changes
+        targetLanguageSelect.addEventListener('change', () => {
+            const selectedText = targetLanguageSelect.options[targetLanguageSelect.selectedIndex].text;
+            currentTargetLangSpan.textContent = selectedText;
+        });
+
+        // Add event listener to the translate button
+        translateButton.addEventListener('click', async () => {
+            const textToTranslate = inputLebLangoText.value.trim();
+            const selectedLanguage = targetLanguageSelect.value;
+            const selectedLanguageText = targetLanguageSelect.options[targetLanguageSelect.selectedIndex].text;
+
+            // Clear previous outputs
+            outputTranslatedText.value = '';
+            outputBackTranslatedText.value = '';
+
+            // Check if there's text to translate
+            if (textToTranslate === '') {
+                outputTranslatedText.value = 'Please enter some Leb Lango text to translate.';
+                return;
+            }
+
+            // Disable button and input fields during translation
+            translateButton.disabled = true;
+            inputLebLangoText.disabled = true;
+            targetLanguageSelect.disabled = true;
+
+            try {
+                // Step 1: Translate from Leb Lango to the target language
+                const translationPrompt = `You are a multilingual translation AI. Accurately translate the following text from Leb Lango to ${selectedLanguageText}. The translation should be clear, context-aware, and grammatically correct. If the input is a single word, maintain its meaning. If it's a sentence or paragraph, preserve the structure and idiomatic usage of ${selectedLanguageText}. Provide only the translated text.\n\nLeb Lango Text: "${textToTranslate}"\n\nTranslated to ${selectedLanguageText}:`;
+                const translatedResult = await callGeminiAPI(translationPrompt);
+                outputTranslatedText.value = translatedResult;
+
+                // Step 2: Back-translate the result to English
+                const backTranslationPrompt = `You are a multilingual translation AI. Accurately translate the following text from ${selectedLanguageText} back to English. Ensure the translation is clear, context-aware, and grammatically correct. Provide only the translated text.\n\nText in ${selectedLanguageText}: "${translatedResult}"\n\nBack-translated to English:`;
+                const backTranslatedResult = await callGeminiAPI(backTranslationPrompt);
+                outputBackTranslatedText.value = backTranslatedResult;
+
+            } catch (error) {
+                console.error('Error during translation process:', error);
+                outputTranslatedText.value = 'An error occurred during translation. Please check your network connection or try again later.';
+                outputBackTranslatedText.value = ''; // Clear back-translation on error
+            } finally {
+                // Re-enable button and inputs
+                translateButton.disabled = false;
+                inputLebLangoText.disabled = false;
+                targetLanguageSelect.disabled = false;
+            }
+        });
+
+        // Function to show the About page and hide the translator
+        function showAboutPage() {
+            translatorApp.style.display = 'none';
+            aboutPage.classList.add('active'); // Use class for opacity transition
+            // Set mainContainer height to match aboutPage content height for smooth transition
+            mainContainer.style.height = aboutPage.scrollHeight + 'px';
+        }
+
+        // Function to show the translator and hide the About page
+        function showTranslatorApp() {
+            aboutPage.classList.remove('active'); // Use class for opacity transition
+            // Reset mainContainer height or set to auto after transition
+            mainContainer.style.height = translatorApp.scrollHeight + 'px';
+            setTimeout(() => { // Delay display for transition
+                translatorApp.style.display = 'block';
+                mainContainer.style.height = 'auto'; // Reset height to auto after app is visible
+            }, 500); // Match CSS transition duration
+        }
+
+
+        // Event listeners for About and Back buttons
+        aboutProjectButton.addEventListener('click', showAboutPage);
+        backToTranslatorButton.addEventListener('click', showTranslatorApp);
+
+        // Initialize the target language label on page load
+        targetLanguageSelect.dispatchEvent(new Event('change'));
+
+        // Ensure the translator app is visible by default on load
+        translatorApp.style.display = 'block';
+        aboutPage.style.display = 'block'; // Make it display block so scrollHeight is calculated correctly for transition
+        aboutPage.classList.remove('active'); // But keep it inactive initially
+        // Initial height adjustment
+        mainContainer.style.height = translatorApp.scrollHeight + 'px';
+    </script>
+</body>
+</html>
